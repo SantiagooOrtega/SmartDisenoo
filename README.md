@@ -1,6 +1,4 @@
-# SmartLibrary – Bloque 5: De clases aisladas a objetos que colaboran
-
-**Taller práctico · Interfaces · Asociación · Agregación · Composición · Herencia · Componentes UML**
+# SmartLibrary - Bloque 5
 
 ## Integrantes
 
@@ -35,87 +33,86 @@ SmartDiseno/
 │       ├── Prestamo.java
 │       ├── Reserva.java
 │       └── Main.java
-├── out/                  ← clases compiladas (generadas con javac)
+├── Docs/
+│   ├── diagrama clases.jpg
+│   └── diagrama comopnentes.jpg
 └── README.md
 ```
 
 ### Compilar y ejecutar
 
 ```bash
-# Desde la raíz del proyecto
 javac -d out src/smartlibrary/*.java
 java -cp out smartlibrary.Main
 ```
 
-Requiere **Java 11 o superior** (usa `java.time.LocalDate`).
+Requiere Java 11 o superior.
 
 ---
 
-## Actividad 1 – Diagnóstico de relaciones
+## Actividad 1 - Diagnostico de relaciones
 
-| Elementos | Relación en el problema | Existencia independiente | Decisión |
+| Elementos | Relacion en el problema | Existencia independiente | Decision |
 |---|---|---|---|
-| Estudiante – Préstamo | Un estudiante genera préstamos; un préstamo registra quién recibió el ejemplar | Sí — el estudiante existe antes y después del préstamo | **Asociación** |
-| Libro – Ejemplar | Un libro tiene copias físicas; cada copia pertenece a un libro | El ejemplar pierde sentido operativo sin libro (ver justificación) | **Agregación** |
-| Préstamo – Renovación | Una renovación es parte del historial interno de un préstamo | No — sin préstamo la renovación carece de significado | **Composición** |
-| Usuario – Estudiante | Un estudiante *es* un usuario del sistema con datos adicionales | El estudiante es-un usuario (no solo se *parece*) | **Herencia** |
-| Usuario – Bibliotecario | Un bibliotecario *es* un usuario con rol de gestión | El bibliotecario es-un usuario (misma justificación) | **Herencia** |
+| Estudiante - Prestamo | Un estudiante genera prestamos; un prestamo registra quien recibio el ejemplar | Si, el estudiante existe antes y despues del prestamo | Asociacion |
+| Libro - Ejemplar | Un libro tiene copias fisicas; cada copia pertenece a un libro | El ejemplar pierde sentido operativo sin libro | Agregacion |
+| Prestamo - Renovacion | Una renovacion es parte del historial interno de un prestamo | No, sin prestamo la renovacion no tiene significado | Composicion |
+| Usuario - Estudiante | Un estudiante es un usuario del sistema con datos adicionales | El estudiante es-un usuario | Herencia |
+| Usuario - Bibliotecario | Un bibliotecario es un usuario con rol de gestion | El bibliotecario es-un usuario | Herencia |
 
 ---
 
-## Actividad 2 – Justificación de las cuatro relaciones
+## Actividad 2 - Justificacion de las cuatro relaciones
 
-### 1. Estudiante – Préstamo → **Asociación**
+### 1. Estudiante - Prestamo: Asociacion
 
-El Préstamo *conoce* al Estudiante que lo originó, pero ninguno contiene al otro ni uno depende del ciclo de vida del otro. Un Estudiante puede existir sin préstamos activos; un Préstamo histórico puede consultarse aunque el estudiante haya egresado. Solo necesitamos que los objetos *se conozcan y colaboren*, que es exactamente la semántica de la asociación.
+El Prestamo conoce al Estudiante que lo origino, pero ninguno contiene al otro ni depende del ciclo de vida del otro. Un Estudiante puede existir sin prestamos activos; un Prestamo historico puede consultarse aunque el estudiante haya egresado.
 
-> **Multiplicidad:** un Estudiante puede tener 0..* préstamos; cada Préstamo pertenece a exactamente 1 Estudiante.
+Multiplicidad: un Estudiante puede tener 0..* prestamos; cada Prestamo pertenece a exactamente 1 Estudiante.
 
-### 2. Préstamo – Ejemplar → **Asociación**
+### 2. Prestamo - Ejemplar: Asociacion
 
-El Préstamo referencia al Ejemplar para gestionar su estado (PRESTADO/DISPONIBLE), pero el Ejemplar existe independientemente: puede ser devuelto, reparado y vuelto a prestar en múltiples préstamos a lo largo del tiempo. La existencia del Ejemplar no está condicionada por la del Préstamo, por lo que no hay razón para una relación todo–parte. Una asociación expresa correctamente que el préstamo *utiliza* el ejemplar.
+El Prestamo referencia al Ejemplar para gestionar su estado, pero el Ejemplar existe independientemente: puede ser devuelto, reparado y vuelto a prestar en multiples prestamos. La existencia del Ejemplar no esta condicionada por la del Prestamo.
 
-> **Multiplicidad:** cada Préstamo involucra exactamente 1 Ejemplar; un Ejemplar puede aparecer en 0..* préstamos a lo largo del tiempo (no simultáneamente).
+Multiplicidad: cada Prestamo involucra exactamente 1 Ejemplar; un Ejemplar puede aparecer en 0..* prestamos a lo largo del tiempo.
 
-### 3. Libro – Ejemplar → **Agregación**
+### 3. Libro - Ejemplar: Agregacion
 
-Aquí existe una relación conceptual **todo–parte**: un Ejemplar es una copia física de un Libro y le pertenece conceptualmente. Sin embargo, elegimos **agregación** (y no composición) porque el ciclo de vida del Ejemplar no está *necesariamente* ligado al del Libro. En un proceso de inventario o baja administrativa, el Ejemplar puede seguir existiendo como registro histórico aunque el Libro sea retirado del catálogo. El Ejemplar mantiene su código, su historial de préstamos y su estado de forma independiente.
+Existe una relacion todo-parte: un Ejemplar es una copia fisica de un Libro. Se elige agregacion y no composicion porque el ciclo de vida del Ejemplar no esta necesariamente ligado al del Libro. En un proceso de inventario o baja administrativa, el Ejemplar puede seguir existiendo como registro historico aunque el Libro sea retirado del catalogo.
 
-> **Supuesto documentado:** si el dominio exigiera que al eliminar el Libro se destruyan automáticamente todos sus Ejemplares sin posibilidad de consulta histórica, la decisión correcta sería composición. Dado que SmartLibrary requiere trazabilidad de inventario, mantenemos agregación.
+Supuesto: si el dominio exigiera que al eliminar el Libro se destruyan automaticamente todos sus Ejemplares, la decision correcta seria composicion. Dado que SmartLibrary requiere trazabilidad de inventario, se mantiene agregacion.
 
-> **Multiplicidad:** 1 Libro tiene 1..* Ejemplares; cada Ejemplar pertenece a exactamente 1 Libro.
+Multiplicidad: 1 Libro tiene 1..* Ejemplares; cada Ejemplar pertenece a exactamente 1 Libro.
 
-### 4. Préstamo – Renovación → **Composición**
+### 4. Prestamo - Renovacion: Composicion
 
-Una Renovación es exclusivamente parte del historial interno de un Préstamo (R11). No tiene identidad propia fuera de ese contexto: no existe "una renovación" sin el préstamo al que pertenece, no se consulta de forma independiente y su eliminación es consecuencia directa de la eliminación del préstamo. Esto satisface la condición de composición: la parte carece de sentido sin el todo y su ciclo de vida está completamente subordinado.
+Una Renovacion es parte del historial interno de un Prestamo. No tiene identidad propia fuera de ese contexto: no existe una renovacion sin el prestamo al que pertenece y su eliminacion es consecuencia directa de la eliminacion del prestamo.
 
-> **Multiplicidad:** un Préstamo puede tener 0..* Renovaciones; cada Renovación pertenece a exactamente 1 Préstamo.
-
----
-
-## Actividad 3 – Herencia: ¿es-un o solo se parecen?
-
-### ¿Estudiante es realmente un tipo de Usuario?
-
-**Sí.** En el dominio de SmartLibrary, un Estudiante *es* un Usuario del sistema: se autentica, aparece en reportes de préstamos y reservas, y el sistema lo trata polimórficamente en cualquier operación que afecte a usuarios (por ejemplo, notificaciones). La relación no se basa solo en atributos compartidos, sino en que Estudiante satisface completamente el contrato de Usuario y agrega comportamiento y estado propios.
-
-### ¿Bibliotecario es realmente un tipo de Usuario?
-
-**Sí, con el mismo razonamiento.** Un Bibliotecario se identifica en el sistema, puede recibir notificaciones y es un participante legítimo del dominio con las mismas propiedades base de identificación, nombre y correo, más atributos propios de su rol.
-
-### ¿Atributos repetidos son suficiente para crear una superclase?
-
-**No.** La mera repetición de atributos es un síntoma, no una justificación. Dos clases que comparten campos por razones accidentales (coincidencia de implementación) pero que representan conceptos distintos no deben unificarse en una jerarquía. Ejemplo: `Vehiculo` y `Edificio` podrían tener ambos `direccion` y `propietario`, pero crear una superclase `CosaConPropietario` produciría un diseño conceptualmente débil porque no existe una abstracción real del dominio que los unifique.
-
-### Situación donde la superclase solo por atributos repetidos produce diseño débil
-
-Imagínese que `Libro` y `Revista` tienen ambos `titulo`, `issn/isbn` y `anioPublicacion`. Si creáramos `PublicacionConTitulo` solo para evitar duplicar esos campos, pero `Revista` tiene `volumen`, `numero` y una semántica completamente distinta de préstamo (no se presta, se consulta en sala), la jerarquía forzaría a que todo el código que trate `PublicacionConTitulo` también deba contemplar casos irrelevantes para cada subclase. La generalización debilita la cohesión sin aportar una abstracción real.
+Multiplicidad: un Prestamo puede tener 0..* Renovaciones; cada Renovacion pertenece a exactamente 1 Prestamo.
 
 ---
 
-## Actividad 4 – Interfaz Notificable
+## Actividad 3 - Herencia
 
-### Diseño del contrato
+### Un Estudiante es un tipo de Usuario?
+
+Si. En SmartLibrary, un Estudiante es un Usuario del sistema: se autentica, aparece en reportes de prestamos y reservas, y el sistema lo trata en cualquier operacion que afecte a usuarios. La relacion no se basa solo en atributos compartidos, sino en que Estudiante satisface completamente el contrato de Usuario y agrega comportamiento propio.
+
+### Un Bibliotecario es un tipo de Usuario?
+
+Si, con el mismo razonamiento. Un Bibliotecario se identifica en el sistema, puede recibir notificaciones y es un participante del dominio con las mismas propiedades base mas atributos propios de su rol.
+
+### Los atributos repetidos son suficiente para crear una superclase?
+
+No. La repeticion de atributos es un sintoma, no una justificacion. Dos clases que comparten campos por coincidencia pero representan conceptos distintos no deben unificarse en una jerarquia. Por ejemplo, Vehiculo y Edificio podrian tener ambos direccion y propietario, pero crear una superclase CosaConPropietario produciria un diseno debil porque no existe una abstraccion real del dominio que los unifique.
+
+Otro caso: Libro y Revista comparten titulo y anioPublicacion, pero Revista tiene volumen y numero y una semantica distinta de prestamo. Crear una superclase solo para evitar duplicar campos forzaria al codigo a contemplar casos irrelevantes para cada subclase.
+
+---
+
+## Actividad 4 - Interfaz Notificable
+
+### Contrato
 
 ```java
 public interface Notificable {
@@ -123,121 +120,78 @@ public interface Notificable {
 }
 ```
 
-### ¿Qué clases implementan Notificable y por qué?
+### Clases que implementan Notificable
 
-| Clase | Implementa Notificable | Justificación |
+| Clase | Implementa | Justificacion |
 |---|---|---|
-| `Estudiante` | ✅ Sí | Principal receptor de alertas: vencimientos, confirmaciones de renovación, disponibilidad de reservas |
-| `Bibliotecario` | ✅ Sí | Receptor de alertas internas del sistema: incidencias, solicitudes pendientes, estadísticas de turno |
+| Estudiante | Si | Principal receptor de alertas: vencimientos, renovaciones, reservas |
+| Bibliotecario | Si | Receptor de alertas internas: solicitudes pendientes, incidencias |
 
-### ¿Qué garantiza el contrato Notificable y qué NO especifica?
+### Que garantiza y que no especifica
 
-| Aspecto | Garantía del contrato |
+| Aspecto | Detalle |
 |---|---|
-| **Qué promete** | Que cualquier objeto que implemente `Notificable` expone el método `notificar(String)` y puede ser invocado sin conocer su tipo concreto |
-| **Qué NO especifica** | Cómo se entrega el mensaje (consola, correo, SMS, push). Cada implementador decide el mecanismo |
-| **¿Define el canal?** | No. La interfaz es agnóstica al canal de comunicación |
+| Que promete | Que cualquier objeto que implemente Notificable expone el metodo notificar(String) |
+| Que no especifica | Como se entrega el mensaje (consola, correo, push). Cada clase decide el mecanismo |
+| Define el canal? | No. La interfaz es agnostica al canal de comunicacion |
 
-### ¿Puede una clase heredar de Usuario e implementar Notificable simultáneamente?
+### Una clase puede heredar de Usuario e implementar Notificable al mismo tiempo?
 
-**Sí, en Java es perfectamente válido.** Java permite herencia simple (solo una superclase) pero implementación múltiple de interfaces. `Estudiante extends Usuario implements Notificable` es la prueba concreta: hereda la estructura de datos de `Usuario` y cumple el contrato de comportamiento de `Notificable` de forma independiente. Esto ilustra la diferencia fundamental:
+Si. Java permite herencia simple pero implementacion multiple de interfaces. `Estudiante extends Usuario implements Notificable` hereda la estructura de Usuario y cumple el contrato de Notificable de forma independiente.
 
-- **Herencia** comparte estructura y comportamiento de una superclase (relación *es-un*).
-- **Interfaz** establece un contrato de comportamiento que la clase se compromete a implementar, sin imponer estructura interna.
-
-Una superclase `Usuario` que declarara `notificar()` como método concreto asumiría *cómo* se notifica, violando la separación de responsabilidades y obligando a que *todo* usuario sea notificable aunque conceptualmente no corresponda. La interfaz permite seleccionar qué clases cumplen ese contrato de forma explícita.
+La diferencia es que la herencia comparte estructura de una superclase, mientras que la interfaz establece un contrato de comportamiento sin imponer estructura interna. Si Usuario declarara notificar() como metodo concreto, obligaria a que todo usuario fuera notificable aunque no corresponda.
 
 ---
 
-## Actividad 6 – Vista funcional mediante componentes UML
+## Actividad 6 - Vista funcional por componentes
 
-| Componente | Clases relacionadas | Dependencias funcionales |
+| Componente | Clases | Dependencias |
 |---|---|---|
-| **Gestión de Usuarios** | `Usuario`, `Estudiante`, `Bibliotecario`, `Notificable` | Provee información de usuarios a **Préstamos** y **Reservas** (quién solicita). Recibe eventos de **Préstamos** para notificar al estudiante |
-| **Gestión de Catálogo** | `Libro`, `Ejemplar` | Provee a **Préstamos** el estado de disponibilidad de ejemplares. Provee a **Reservas** la información del libro solicitado |
-| **Gestión de Préstamos** | `Prestamo`, `Renovacion` | Consulta a **Usuarios** para validar el estudiante. Consulta a **Catálogo** para verificar y actualizar el estado del ejemplar. Notifica a **Usuarios** tras renovaciones |
-| **Gestión de Reservas** | `Reserva` | Consulta a **Usuarios** para identificar al solicitante. Consulta a **Catálogo** para conocer disponibilidad. Puede disparar la creación de un Préstamo en **Préstamos** cuando se atiende una reserva |
-
-> El diagrama de componentes visual se encuentra en el diagrama UML entregado por el equipo de diseño (archivo Draw.io / Visual Paradigm adjunto al repositorio).
+| Gestion de Usuarios | Usuario, Estudiante, Bibliotecario, Notificable | Provee informacion de usuarios a Prestamos y Reservas |
+| Gestion de Catalogo | Libro, Ejemplar | Provee estado de disponibilidad a Prestamos y Reservas |
+| Gestion de Prestamos | Prestamo, Renovacion | Consulta Usuarios y Catalogo; notifica tras renovaciones |
+| Gestion de Reservas | Reserva | Consulta Usuarios y Catalogo; puede originar un Prestamo |
 
 ---
 
-## Evidencia de ejecución
+## Evidencia de ejecucion
 
-La siguiente salida se obtiene ejecutando `java -cp out smartlibrary.Main`:
+Salida al ejecutar `java -cp out smartlibrary.Main`:
 
 ```
-══════════════════════════════════════════════════
-  CONFIGURACIÓN INICIAL DEL SISTEMA
-══════════════════════════════════════════════════
+CONFIGURACION INICIAL DEL SISTEMA
 Libro creado    : Libro [isbn=978-0-13-468599-1, titulo=Clean Code, autor=Robert C. Martin, anio=2008]
 Ejemplar creado : Ejemplar [codigo=CC-001, libro=Clean Code, estado=DISPONIBLE]
-Estudiante      : Estudiante [id=1001234567, nombre=Laura Gómez, correo=laura.gomez@uni.edu.co] | código=EST-2021-089, programa=Ingeniería de Sistemas
-Bibliotecario   : Bibliotecario [id=7654321001, nombre=Carlos Ríos, correo=carlos.rios@biblioteca.edu.co] | empleado=BIB-045, turno=MAÑANA
+Estudiante      : Estudiante [id=1001234567, nombre=Laura Gomez, correo=laura.gomez@uni.edu.co] | codigo=EST-2021-089, programa=Ingenieria de Sistemas
+Bibliotecario   : Bibliotecario [id=7654321001, nombre=Carlos Rios, correo=carlos.rios@biblioteca.edu.co] | empleado=BIB-045, turno=MANANA
 
-══════════════════════════════════════════════════
-  PRUEBA DE CONTRATO Notificable
-══════════════════════════════════════════════════
-[NOTIFICACIÓN → Laura Gómez] Bienvenido al sistema SmartLibrary.
-[ALERTA INTERNO → Carlos Ríos] Nuevo ejemplar registrado en catálogo.
-
-══════════════════════════════════════════════════
-  CREACIÓN DE PRÉSTAMO
-══════════════════════════════════════════════════
-Préstamo creado : Prestamo [id=P-2026-001, estudiante=Laura Gómez, ejemplar=CC-001, devolucion=10/10/2026, renovaciones=0, activo=true]
-Estado ejemplar : PRESTADO
-
-══════════════════════════════════════════════════
-  PRUEBA 1 – RENOVACIÓN VÁLIDA
-══════════════════════════════════════════════════
+PRUEBA 1 - RENOVACION VALIDA
 Intentando renovar al 2026-10-17 ...
-✔ Renovación exitosa.
-  Nueva fecha de devolución : 2026-10-17
+Renovacion exitosa.
+  Nueva fecha de devolucion : 2026-10-17
   Total renovaciones        : 1
-  Detalle                   : Renovacion [realizada=30/09/2026, anterior=10/10/2026, nueva=17/10/2026]
-[NOTIFICACIÓN → Laura Gómez] Su préstamo fue renovado hasta el 2026-10-17.
 
-══════════════════════════════════════════════════
-  PRUEBA 2 – RENOVACIÓN INVÁLIDA (fecha igual a la vigente)
-══════════════════════════════════════════════════
-Intentando renovar al 2026-10-17 (igual a la vigente) ...
-✔ Excepción capturada correctamente:
-  → La nueva fecha de devolución (17/10/2026) debe ser posterior a la fecha vigente (17/10/2026).
+PRUEBA 2 - RENOVACION INVALIDA (fecha igual a la vigente)
+Intentando renovar al 2026-10-17 ...
+Excepcion capturada: La nueva fecha de devolucion (17/10/2026) debe ser posterior a la fecha vigente (17/10/2026).
 
-══════════════════════════════════════════════════
-  PRUEBA 3 – RENOVACIÓN INVÁLIDA (fecha anterior a la vigente)
-══════════════════════════════════════════════════
-Intentando renovar al 2026-10-05 (anterior a la vigente) ...
-✔ Excepción capturada correctamente:
-  → La nueva fecha de devolución (05/10/2026) debe ser posterior a la fecha vigente (17/10/2026).
-
-══════════════════════════════════════════════════
-  ESTADO FINAL DEL PRÉSTAMO
-══════════════════════════════════════════════════
-Prestamo [id=P-2026-001, estudiante=Laura Gómez, ejemplar=CC-001, devolucion=17/10/2026, renovaciones=1, activo=true]
-
-══════════════════════════════════════════════════
-  PRUEBA DE RESERVA
-══════════════════════════════════════════════════
-Reserva creada  : Reserva [id=R-2026-001, estudiante=Laura Gómez, libro=Design Patterns, fecha=30/09/2026, estado=PENDIENTE]
-Reserva atendida: Reserva [id=R-2026-001, estudiante=Laura Gómez, libro=Design Patterns, fecha=30/09/2026, estado=ATENDIDA]
-[NOTIFICACIÓN → Laura Gómez] Su reserva del libro 'Design Patterns' fue atendida.
+PRUEBA 3 - RENOVACION INVALIDA (fecha anterior a la vigente)
+Intentando renovar al 2026-10-05 ...
+Excepcion capturada: La nueva fecha de devolucion (05/10/2026) debe ser posterior a la fecha vigente (17/10/2026).
 ```
 
-### Comportamiento de las renovaciones inválidas
-
-| Intento | Fecha solicitada | Fecha vigente | Resultado esperado |
+| Intento | Fecha solicitada | Fecha vigente | Resultado |
 |---|---|---|---|
-| Renovación válida | 17/10/2026 | 10/10/2026 | ✅ Éxito – nueva fecha registrada |
-| Renovación inválida (igual) | 17/10/2026 | 17/10/2026 | ✅ `IllegalArgumentException` lanzada |
-| Renovación inválida (anterior) | 05/10/2026 | 17/10/2026 | ✅ `IllegalArgumentException` lanzada |
+| Renovacion valida | 17/10/2026 | 10/10/2026 | Exito, fecha actualizada |
+| Renovacion invalida (igual) | 17/10/2026 | 17/10/2026 | IllegalArgumentException lanzada |
+| Renovacion invalida (anterior) | 05/10/2026 | 17/10/2026 | IllegalArgumentException lanzada |
 
 ---
 
-## Conclusión
+## Conclusion
 
-Diseñar relaciones entre clases obliga a preguntarse qué significa realmente cada vínculo en el dominio. Mientras se observan clases aisladas, los atributos y métodos parecen suficientes. Al modelar colaboraciones aparecen preguntas críticas: ¿este objeto puede vivir sin el otro?, ¿necesitan conocerse o uno pertenece al otro?, ¿la semejanza refleja una abstracción real o solo coincidencia estructural? Responder esas preguntas con evidencia del requisito —y no por intuición o por el nombre de las clases— es lo que diferencia un diseño justificado de uno arbitrario. Las interfaces añaden una dimensión adicional: permiten comprometer comportamiento sin imponer herencia, separando el *qué* del *cómo*. El resultado es un modelo donde cada línea del diagrama tiene un argumento detrás.
+Disenar relaciones entre clases obliga a preguntarse que significa cada vinculo en el dominio. Cuando se miran clases aisladas los atributos y metodos parecen suficientes, pero al modelar colaboraciones aparecen preguntas que cambian las decisiones de diseno: puede este objeto vivir sin el otro, necesitan conocerse o uno pertenece al otro, la semejanza refleja una abstraccion real o solo coincidencia estructural. Responder esas preguntas con base en el requisito es lo que diferencia un diseno justificado de uno arbitrario. Las interfaces agregan otra dimension: permiten comprometer comportamiento sin imponer herencia, separando el que del como.
 
 ---
 
-*Taller Bloque 5 · SmartLibrary · Programación Orientada a Objetos*
+*Taller Bloque 5 - SmartLibrary - Programacion Orientada a Objetos*
