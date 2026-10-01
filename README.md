@@ -9,6 +9,16 @@
 
 ---
 
+## Diagramas
+
+### Diagrama de Clases
+![Diagrama de Clases](Docs/diagrama%20clases.jpg)
+
+### Diagrama de Componentes
+![Diagrama de Componentes](Docs/diagrama%20comopnentes.jpg)
+
+---
+
 ## Estructura del proyecto
 
 ```
